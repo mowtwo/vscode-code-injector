@@ -1,10 +1,11 @@
 import { statSync, writeFileSync } from 'node:fs'
+import type { Disposable } from 'vscode'
 import { RelativePattern, window, workspace } from 'vscode'
 
-export function activate() {
-  // const folders = workspace.workspaceFolders ?? []
+let watcher: Disposable
 
-  workspace.onDidCreateFiles((e) => {
+export function activate() {
+  watcher = workspace.onDidCreateFiles((e) => {
     for (const file of e.files) {
       if (statSync(file.fsPath)?.isFile?.() && file.fsPath.endsWith('.js')) {
         writeFileSync(
@@ -18,5 +19,5 @@ export function activate() {
 }
 
 export function deactivate() {
-
+  watcher?.dispose()
 }
